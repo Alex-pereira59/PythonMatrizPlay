@@ -20,7 +20,7 @@ nombre2=" "
 
 root2 = Tk()
 root2.title('TKINTER game')
-root2.geometry("700x500")
+root2.geometry("500x500")
 root2.config(bg="#FFFFFF")
 
 def selection_changed(event):
@@ -50,14 +50,22 @@ Labelpunteos1.place(x=220, y=280)
 labelturn=ttk.Label(root2,text="0")
 labelturn.place(x=220, y=400)
 
+
 #conteo de puntos jugador 1
-Labelpunteos2=ttk.Label(root2, text= "0")
+Labelpunteos3=ttk.Label(root2, text= "0")
+Labelpunteos3.place(x=220, y=350)
+
+#Cuantos turnos desea para cada usuario
+Labelpunteos2=ttk.Label(root2, text= "Ingrese el numero de los turnos")
 Labelpunteos2.place(x=220, y=250)
+
+
+
 
 
 #texto en pantalla
 titulo = ttk.Label(text="Bienvenido a Matriz Aritmetrica", font="Arial")
-titulo.place(x =220, y=40)
+titulo.place(x =120, y=40)
 
 #texto en pantalla jugador 1
 titulo1 = ttk.Label(text="Jugador 1: ")
@@ -71,7 +79,9 @@ titulo3 = ttk.Label(text="Jugador 2: ")
 titulo3.place(x=220,y=190)
 titulo4 =ttk.Entry(root2, text="Jugador 2: ")
 titulo4.place(x=220, y=210)
-
+titulop =ttk.Entry(root2, text="Turnos")
+titulop.place(x=220, y=410)
+Tpermitidos = 0
 
 def ingresarcredenciales():
     global nombre1
@@ -84,12 +94,20 @@ def ingresarcredenciales():
     nombre2=titulo4.get()
     labelnombre2=ttk.Label(text=str(nombre2))
     labelnombre2.place(x=330, y=280)
+    
+    global Tpermitidos
+    turnoss = titulop.get()
+    print("Necesitan " + str(turnoss))
+    Tpermitidos = 2 * turnoss
+    
+    
    
     
     
 boton = ttk.Button(text="ingrese: ", command=ingresarcredenciales)
 boton.place(x=150+10+150,y=400)
 ingrese=ttk.Entry()
+
 
 
 
@@ -117,11 +135,13 @@ matriz = [[random.randint(0,11) for x in range(columnas)] for y in range(filas)]
 #crear una matriz vacia
 anulados=[]#Aqui ire guardando las posiciones de los botones que ya fueron utilizados
 sumatoria = 0 #Guardaré la sumatoria de los numeros vecinos
-
+multiplicador = 0
 #Se hara una funcion el cual se ejecutara cuando el usuario le de click a un boton de la matriz.
 def nuevo_click(i, j):
     global sumatoria #Utilizo la variable sumatoria en modalidad global.
     sumatoria = 0 #Reinicio la variable en 0
+    global multiplicador 
+    multiplicador = matriz[i][j]
     print(str(i) + " " + str(j))
     #Ahora comprobare si la posición que se envió ya existe en la matriz anulados.
     if [i, j] in anulados: #S
@@ -220,7 +240,7 @@ def nuevo_click(i, j):
         print(inicio)
     
         
-        
+        #proceso de tiempo limitado del jugador 
 def detenerTiempo():
     global tiempo
     global inicio
@@ -228,6 +248,7 @@ def detenerTiempo():
     global sumatoria
     global puntosjugador1
     global puntosjugador2
+    global multiplicador
     
     final = time.time()
     tiempo = round(final-inicio, 0)
@@ -237,7 +258,8 @@ def detenerTiempo():
     print(resultadoUsuario)
     print(sumatoria)
     
-    if int(resultadoUsuario) == sumatoria:
+    
+    if int(resultadoUsuario) == sumatoria * multiplicador:
         if tiempo > 25.0:
             messagebox.showinfo(message="Lo siento, se acabo tu tiempo te has tardado " + str(tiempo) + " segundos.", title="TIEMPO")
         else:
@@ -257,33 +279,23 @@ def detenerTiempo():
                 messagebox.showinfo(message= "el jugador " + nombre1 + " lleva " + str (puntosjugador1) + " puntos\n" + "turno de: " + nombre2)
                 Labelpunteos2.config(text= str(puntosjugador1))
                 labelturn.config(text="turno de " + nombre2)
-                #print("el jugador " + nombre1 + " lleva: " + str (puntosjugador1) + " puntos")
+              
             
     else:
-        #evaluar si turno es igual a true crear un messagebox con el mensaje "le correspendo turno a " + nombre 2
+      
         if turno == True:
             messagebox.showinfo(message="Lo siento, la respuesta es incorrecta y te has tardado " + str(tiempo) + " segundos.\n Lleva " + str (puntosjugador2) + "\nLe corresponde turno a: " + str(nombre1), title="TIEMPO")
              
         else:
             messagebox.showinfo(message="Lo siento, la respuesta es incorrecta y te has tardado " + str(tiempo) + " segundos.\n" + "lleva "+ str (puntosjugador1) + "\nLe corresponde turno a: "+ str(nombre2), title="TIEMPO")
-       # messagebox.showinfo(message="Lo siento, el numero correcto era " + str(sumatoria) + "Turno de: " str(), title="Incorrecto ")
-        
-
+       
+    
     generarMatriz()
-   
-
-#Crear un boton que diga, seleccion
-
-
-
+    global Tpermitidos
+    print("FALTAN ---- " + str(Tpermitidos))
     
     
-    
-    
-    
-    
-
-
+#boton de seleccion
 print(matriz)
 
 
@@ -305,12 +317,7 @@ def generarMatriz():
     for i in range(filas):
         btnLista.append([])
         for j in range(columnas):
-            #Crear un label en la matriz
-            #label2 = Label(root, text=matriz[i][j], font=("Arial", 20, "bold"), bg="#070D0F", fg="white")
-            #label2.grid(row = i, column = j)
-            #label2.place(relx=posicionX, rely=posicionY)
-            #label2.config(bg = "#070D0F")
-            
+   
             if [i, j] in anulados:
                 print('Existe en la matriz')
                 
@@ -335,13 +342,12 @@ titulo.place(x =10, y=10)
 titulo1 = ttk.Label(root, text="Escriba su resultado")
 titulo1.place(x =320, y=30)
     
-# Crear caja de texto.
+
 entry = ttk.Entry(root)
+
 # Posicionarla en la ventana.
 entry.place(x=370+70, y=30) 
 
-#boton = ttk.Button(text="Creacion", command=generarMatriz)
-#boton.place(x=5, y=5)
 
 boton = ttk.Button(root, text="Comprobar", command=detenerTiempo)
 boton.place(x=370+70+150, y=30)
